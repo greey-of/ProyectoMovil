@@ -1,4 +1,4 @@
-package com.example.projectmovil
+package com.example.projectmovil.data.entity
 
 import androidx.room.Dao
 import androidx.room.Insert
@@ -20,5 +20,3 @@ interface FichaTecnicaDao {
     @Query("SELECT * FROM fichas_tecnicas ORDER BY nombreProducto ASC")
     fun obtenerTodas(): Flow<List<FichaTecnicaEntity>>
 }
-
-
