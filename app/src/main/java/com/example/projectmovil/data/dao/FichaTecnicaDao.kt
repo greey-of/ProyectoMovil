@@ -1,8 +1,9 @@
-package com.example.projectmovil
+package com.example.projectmovil.data.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import com.example.projectmovil.data.entity.FichaTecnicaEntity
 import kotlinx.coroutines.flow.Flow
 
 // La anotación @Dao le indica a Room que esta es una interfaz de acceso a datos.
@@ -20,5 +21,3 @@ interface FichaTecnicaDao {
     @Query("SELECT * FROM fichas_tecnicas ORDER BY nombreProducto ASC")
     fun obtenerTodas(): Flow<List<FichaTecnicaEntity>>
 }
-
-

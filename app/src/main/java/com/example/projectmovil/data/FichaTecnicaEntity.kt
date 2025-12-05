@@ -1,11 +1,20 @@
-package com.example.examen.data
+package com.example.projectmovil
 
-import android.net.Uri
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "//nomvbre de la trabla")
+// La anotación @Entity le dice a Room que esta clase representa una tabla.
+@Entity(tableName = "fichas_tecnicas")
 data class FichaTecnicaEntity(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
-//agregar como sea necesario
+    // @PrimaryKey define cuál es la columna de clave primaria.
+    // autoGenerate = true hace que Room genere un ID único para cada nueva fila.
+    @PrimaryKey(autoGenerate = true)
+    val id: Int = 0,
+
+    // Aquí defines las otras columnas de tu tabla.
+    // Puedes cambiar estos campos según lo que necesites guardar.
+    val nombreProducto: String,
+    val descripcion: String,
+    val numeroSerie: String,
+    val fechaCompra: String
 )
