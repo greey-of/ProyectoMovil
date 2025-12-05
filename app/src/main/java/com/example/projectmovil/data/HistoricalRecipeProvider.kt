@@ -677,6 +677,10 @@ object HistoricalRecipeProvider {
     )
 
 
+    /**
+     * Función para obtener todas las opciones únicas de filtro
+     * a partir de la lista de recetas históricas, usando las funciones de extensión para ordenar.
+     */
     fun getFilterOptions(): FilterOptions {
         // A) Extraer tipos únicos y ordenarlos
         val uniqueTypes = historicalRecipes
@@ -687,18 +691,14 @@ object HistoricalRecipeProvider {
 
         // B) Extraer ratings únicos y ordenarlos usando el valor numérico (de mayor a menor)
         val uniqueRatings = historicalRecipes
-            // CORRECCIÓN: Usamos la propiedad 'numericRating' en lugar de la función de extensión.
-            .sortedByDescending { it.numericRating }
+            .sortedByDescending { it.getNumericRating() } // Requiere la función de extensión en HistoricalRecipe.kt
             .map { it.rating }
             .toSet()
             .toList()
-            // Aseguramos que se ordenen de nuevo por string para la UI (ej: 5.0, 4.8, 4.7...)
-            .sortedDescending()
 
         // C) Extraer calorías únicas y ordenarlas usando el valor numérico (de menor a mayor)
         val uniqueCalories = historicalRecipes
-            // CORRECCIÓN: Usamos la propiedad 'numericCalories' en lugar de la función de extensión.
-            .sortedBy { it.numericCalories }
+            .sortedBy { it.getNumericCalories() } // Requiere la función de extensión en HistoricalRecipe.kt
             .map { it.calories }
             .toSet()
             .toList()
@@ -706,17 +706,23 @@ object HistoricalRecipeProvider {
         // D) Extraer TODOS los ingredientes únicos
         val uniqueIngredients = historicalRecipes
             .flatMap { it.ingredients } // Junta todas las listas de ingredientes en una sola
-            .map { rawIngredient ->
-                // CORRECCIÓN: Devolvemos el ingrediente completo para que el filtro sea preciso.
-                // Si quieres solo el nombre, necesitarías una lógica más compleja para limpiar.
-                // Dejaremos el ingrediente completo (ej: "1 taza de lentejas rojas").
-                rawIngredient
+            .map {
+                // Limpia el ingrediente (ej: "1 taza de lentejas rojas" -> "lentejas rojas")
+                it.replace(Regex("^[0-9\\/\\.\\s]*[a-zA-ZáéíóúñÁÉÍÓÚÑ]+\\s+de\\s+"), "")
+                    .replace(Regex("^[0-9\\/\\.\\s]*[a-zA-ZáéíóúñÁÉÍÓÚÑ]+\\s+"), "")
+                    .trim()
+                    .split('(')[0].trim()
             }
-            .toSet() // Nos aseguramos de que no haya duplicados
+            .filter { it.isNotEmpty() && it.length > 2 }
+            .toSet()
             .toList()
             .sorted()
 
-
-        return FilterOptions(uniqueTypes, uniqueRatings, uniqueIngredients, uniqueCalories)
+        return FilterOptions(
+            types = uniqueTypes,
+            ratings = uniqueRatings,
+            calories = uniqueCalories,
+            ingredients = uniqueIngredients
+        )
     }
 }
