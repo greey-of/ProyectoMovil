@@ -1,16 +1,22 @@
 package com.example.projectmovil.data
 
-// Importamos la clase del mismo paquete
-import com.example.projectmovil.data.HistoricalRecipe
+// 1. CLASE DE DATOS PARA LAS OPCIONES DE FILTRO
+data class FilterOptions(
+    val types: List<String>,
+    val ratings: List<String>,
+    val calories: List<String>,
+    val ingredients: List<String>
+)
 
 // Objeto Singleton que proporciona la lista de recetas estáticas (PROVEEDOR)
 object HistoricalRecipeProvider {
 
+    // TU LISTA DE RECETAS HISTÓRICAS
     val historicalRecipes = listOf(
         HistoricalRecipe(
             name = "Sopa Egipcia de Lentejas (Shorbat Ads)",
             shortDescription = "Sopa básica consumida en el antiguo Egipto",
-            type = "Sopa", // Tipo
+            type = "Sopa",
             rating = "⭐ 4.6",
             calories = "280 kcal por porción",
             history = "La sopa de lentejas era un alimento común en el antiguo Egipto. Los trabajadores de las pirámides la consumían por ser barata, nutritiva y fácil de preparar. Está registrada en textos agrícolas del Imperio Medio.",
@@ -36,7 +42,7 @@ object HistoricalRecipeProvider {
         HistoricalRecipe(
             name = "Gachas Romanas (Puls)",
             shortDescription = "Plato de cebada básico en la antigua Roma",
-            type = "Plato Fuerte", // Tipo
+            type = "Plato Fuerte",
             rating = "⭐ 4.0",
             calories = "250 kcal por porción",
             history = "La puls era el alimento cotidiano de los romanos pobres y soldados. Se preparaba con harina de cebada y agua, a veces enriquecida con queso o hierbas. Aparece en textos de Catón el Viejo.",
@@ -59,7 +65,7 @@ object HistoricalRecipeProvider {
         HistoricalRecipe(
             name = "Pan Naan Persa Antiguo",
             shortDescription = "Pan plano horneado en tandoor",
-            type = "Pan", // Tipo
+            type = "Pan",
             rating = "⭐ 4.7",
             calories = "210 kcal por pieza",
             history = "El naan tiene origen en Persia alrededor del siglo XII. Fue mencionado en textos persas medievales como pan de élite servido en banquetes y palacios.",
@@ -82,7 +88,7 @@ object HistoricalRecipeProvider {
         HistoricalRecipe(
             name = "Atole Maya de Maíz",
             shortDescription = "Bebida espesa prehispánica de maíz",
-            type = "Bebida", // Tipo
+            type = "Bebida",
             rating = "⭐ 4.5",
             calories = "180 kcal por taza",
             history = "Los mayas consumían atoles desde el Preclásico, usando maíz nixtamalizado molido y agua. Estaba relacionado con rituales agrícolas dedicados al dios Yum Kaax.",
@@ -104,7 +110,7 @@ object HistoricalRecipeProvider {
         HistoricalRecipe(
             name = "Pan Medieval de Centeno",
             shortDescription = "Pan denso y oscuro típico del norte de Europa",
-            type = "Pan", // Tipo
+            type = "Pan",
             rating = "⭐ 4.3",
             calories = "195 kcal por rebanada",
             history = "En la Edad Media el pan de centeno era el alimento principal en regiones frías donde el trigo no crecía. Monasterios europeos registran esta receta desde el siglo X.",
@@ -125,7 +131,7 @@ object HistoricalRecipeProvider {
         HistoricalRecipe(
             name = "Sopa Rusa Shchi Medieval",
             shortDescription = "Sopa de col muy popular en la Rus de Kiev",
-            type = "Sopa", // Tipo
+            type = "Sopa",
             rating = "⭐ 4.4",
             calories = "160 kcal por porción",
             history = "Shchi aparece en documentos del siglo IX. Era consumida por campesinos y nobles, variando solo en calidad de ingredientes.",
@@ -149,7 +155,7 @@ object HistoricalRecipeProvider {
         HistoricalRecipe(
             name = "Guiso Vikingo de Cordero",
             shortDescription = "Estofado de carne con cebolla y cebada",
-            type = "Plato Fuerte", // Tipo
+            type = "Plato Fuerte",
             rating = "⭐ 4.6",
             calories = "420 kcal por porción",
             history = "Restos arqueológicos y sagas nórdicas describen guisos de cordero combinados con cebada y hierbas silvestres entre los pueblos vikingos.",
@@ -173,7 +179,7 @@ object HistoricalRecipeProvider {
         HistoricalRecipe(
             name = "Machica Inca",
             shortDescription = "Harina tostada de cebada mezclada con agua o miel",
-            type = "Bebida", // Tipo
+            type = "Bebida",
             rating = "⭐ 4.1",
             calories = "220 kcal por porción",
             history = "La machica aparece en crónicas del siglo XVI como alimento portátil de los mensajeros chasquis. Se preparaba tostando cebada y moliéndola.",
@@ -193,7 +199,7 @@ object HistoricalRecipeProvider {
         HistoricalRecipe(
             name = "Pozole Prehispánico",
             shortDescription = "Guiso ritual de maíz cacahuazintle",
-            type = "Sopa", // Tipo
+            type = "Sopa",
             rating = "⭐ 4.8",
             calories = "350 kcal por plato",
             history = "El pozole tiene origen antes de la conquista. Se usaba en ceremonias mexicas dedicadas a Xipe Tótec. Los ingredientes eran maíz nixtamalizado, hierbas y carne de guajolote.",
@@ -214,7 +220,7 @@ object HistoricalRecipeProvider {
         HistoricalRecipe(
             name = "Gallo Celta Hervido",
             shortDescription = "Plato ritual de tribus celtas",
-            type = "Plato Fuerte", // Tipo
+            type = "Plato Fuerte",
             rating = "⭐ 3.9",
             calories = "300 kcal por porción",
             history = "Los celtas cocinaban gallo en agua con hierbas aromáticas en banquetes religiosos, según registros romanos como los de Julio César.",
@@ -236,7 +242,7 @@ object HistoricalRecipeProvider {
         HistoricalRecipe(
             name = "Pan Plano Judío (Matzá)",
             shortDescription = "Pan sin levadura tradicional del antiguo Israel",
-            type = "Pan", // Tipo
+            type = "Pan",
             rating = "⭐ 4.5",
             calories = "170 kcal por pieza",
             history = "El matzá es uno de los alimentos más antiguos documentados en textos hebreos. Representa la prisa con la que los israelitas huyeron de Egipto, sin tiempo para fermentar el pan. En la antigüedad se elaboraba simplemente con harina y agua, cocido en hornos de barro o planchas calientes.",
@@ -267,7 +273,7 @@ object HistoricalRecipeProvider {
         HistoricalRecipe(
             name = "Avena Vikinga (Hafragrautur)",
             shortDescription = "Gachas de avena consumidas por pueblos nórdicos",
-            type = "Plato Fuerte", // Tipo
+            type = "Plato Fuerte",
             rating = "⭐ 4.4",
             calories = "290 kcal por porción",
             history = "La avena era uno de los granos esenciales en la dieta vikinga. Las sagas nórdicas mencionan su consumo diario, especialmente en climas fríos. Se preparaba con agua o leche, y ocasionalmente se endulzaba con miel cuando estaba disponible.",
@@ -299,7 +305,7 @@ object HistoricalRecipeProvider {
         HistoricalRecipe(
             name = "Ensalada Romana de Pepino (Cucumeres)",
             shortDescription = "Ensalada fresca mencionada en textos romanos",
-            type = "Ensalada", // Tipo
+            type = "Ensalada",
             rating = "⭐ 4.3",
             calories = "90 kcal por porción",
             history = "Según el escritor romano Columela, los pepinos eran muy apreciados y se consumían frescos o en vinagre. Las ensaladas simples con vinagre, sal y hierbas eran comunes en las casas romanas y en los campamentos militares.",
@@ -329,7 +335,7 @@ object HistoricalRecipeProvider {
         HistoricalRecipe(
             name = "Guiso Medieval de Garbanzos",
             shortDescription = "Estofado típico europeo del siglo XIV",
-            type = "Guiso", // Tipo
+            type = "Guiso",
             rating = "⭐ 4.6",
             calories = "350 kcal por porción",
             history = "Registros del Libro de Cocina de Taillevent (siglo XIV) mencionan caldos espesos de garbanzo con hierbas y verduras. Este tipo de guiso sustentó a campesinos y viajeros en Europa medieval.",
@@ -366,7 +372,7 @@ object HistoricalRecipeProvider {
         HistoricalRecipe(
             name = "Guiso Sumerio de Cebada",
             shortDescription = "Plato basado en tablillas de la antigua Mesopotamia",
-            type = "Guiso", // Tipo
+            type = "Guiso",
             rating = "⭐ 4.2",
             calories = "330 kcal por porción",
             history = "Una de las primeras recetas escritas en la historia proviene de tablillas sumerias. Usaban cebada hervida con vegetales simples y aceite de sésamo.",
@@ -396,7 +402,7 @@ object HistoricalRecipeProvider {
         HistoricalRecipe(
             name = "Hummus Antiguo",
             shortDescription = "Pasta de garbanzo consumida desde hace siglos",
-            type = "Dip/Acompañamiento", // Tipo
+            type = "Dip/Acompañamiento",
             rating = "⭐ 4.8",
             calories = "260 kcal por porción",
             history = "El hummus aparece en textos árabes del siglo XIII y probablemente existía desde antes en variantes más simples sin tantos condimentos modernos.",
@@ -423,7 +429,7 @@ object HistoricalRecipeProvider {
         HistoricalRecipe(
             name = "Sopa Egipcia de Lentejas Rojas (Shorbat Ads)",
             shortDescription = "Plato tradicional de Egipto consumido desde tiempos faraónicos",
-            type = "Sopa", // Tipo
+            type = "Sopa",
             rating = "⭐ 4.7",
             calories = "280 kcal por porción",
             history = "Las lentejas eran uno de los cultivos más importantes del Antiguo Egipto. Las tumbas de Saqqara y los papiros médicos mencionan caldos nutritivos de lentejas combinados con cebolla y comino. Hoy, la Shorbat Ads es la heredera directa de esa tradición.",
@@ -460,7 +466,7 @@ object HistoricalRecipeProvider {
         HistoricalRecipe(
             name = "Tortas Romanas de Queso y Miel (Libum)",
             shortDescription = "Panecillos dulces ofrecidos en rituales romanos",
-            type = "Postre", // Tipo
+            type = "Postre",
             rating = "⭐ 4.6",
             calories = "240 kcal por pieza",
             history = "El 'Libum' aparece en el libro De Agricultura de Catón el Viejo. Era una torta ofrecida a los dioses en celebraciones domésticas. Consistía en queso fresco, harina y miel, cocido lentamente.",
@@ -489,7 +495,7 @@ object HistoricalRecipeProvider {
         HistoricalRecipe(
             name = "Kheer Indio Antiguo",
             shortDescription = "Arroz dulce con leche usado en festivales desde hace milenios",
-            type = "Postre", // Tipo
+            type = "Postre",
             rating = "⭐ 4.8",
             calories = "320 kcal por porción",
             history = "El Kheer aparece en textos sánscritos del 400 a.C. Era un postre ceremonial preparado con arroz, leche y azúcar de palma. En la India antigua se consideraba un alimento auspicioso.",
@@ -521,7 +527,7 @@ object HistoricalRecipeProvider {
         HistoricalRecipe(
             name = "Sopa China de Jengibre y Pollo",
             shortDescription = "Caldo medicinal tradicional desde la dinastía Han",
-            type = "Sopa", // Tipo
+            type = "Sopa",
             rating = "⭐ 4.4",
             calories = "210 kcal por porción",
             history = "Los escritos médicos del emperador amarillo (Huangdi Neijing) mencionan caldos ligeros con jengibre y pollo para equilibrar el Qi. Era uno de los platos de recuperación más comunes en la antigua China.",
@@ -552,7 +558,7 @@ object HistoricalRecipeProvider {
         HistoricalRecipe(
             name = "Estofado Irlandés Antiguo",
             shortDescription = "Guiso de cordero y raíces usado desde la Edad Media",
-            type = "Guiso", // Tipo
+            type = "Guiso",
             rating = "⭐ 4.6",
             calories = "380 kcal por porción",
             history = "El Irish Stew aparece en registros del siglo XIV. Era un plato rústico hecho con cordero, papas y cebolla. Representaba la cocina campesina irlandesa.",
@@ -584,7 +590,7 @@ object HistoricalRecipeProvider {
         HistoricalRecipe(
             name = "Pan Plano Persa (Nan-e Barbari)",
             shortDescription = "Pan tradicional del antiguo Imperio Persa",
-            type = "Pan", // Tipo
+            type = "Pan",
             rating = "⭐ 4.7",
             calories = "210 kcal por unidad",
             history = "Este pan tiene raíces en el periodo Safávida. Su elaboración con harina, agua y semillas era común en caravasares (posadas comerciales).",
@@ -610,7 +616,7 @@ object HistoricalRecipeProvider {
         HistoricalRecipe(
             name = "Sopa Azteca de Maíz (Pozolli Simple)",
             shortDescription = "Versión antigua del pozole prehispánico",
-            type = "Sopa", // Tipo
+            type = "Sopa",
             rating = "⭐ 4.5",
             calories = "310 kcal por porción",
             history = "El pozolli aparece en crónicas de fray Bernardino de Sahagún. Se preparaba con maíz nixtamalizado, hierbas locales y ocasionalmente carne.",
@@ -641,7 +647,7 @@ object HistoricalRecipeProvider {
         HistoricalRecipe(
             name = "Sopa Japonesa de Miso Antiguo",
             shortDescription = "Caldo fermentado tradicional del Japón feudal",
-            type = "Sopa", // Tipo
+            type = "Sopa",
             rating = "⭐ 4.8",
             calories = "160 kcal por porción",
             history = "El miso tiene más de 1,300 años de historia. Monjes budistas lo preparaban como alimento energético y medicinal. Esta versión refleja una preparación simple, sin ingredientes modernos raros.",
@@ -669,4 +675,54 @@ object HistoricalRecipeProvider {
             )
         ),
     )
+
+
+    /**
+     * Función para obtener todas las opciones únicas de filtro
+     * a partir de la lista de recetas históricas, usando las funciones de extensión para ordenar.
+     */
+    fun getFilterOptions(): FilterOptions {
+        // A) Extraer tipos únicos y ordenarlos
+        val uniqueTypes = historicalRecipes
+            .map { it.type }
+            .toSet()
+            .toList()
+            .sorted()
+
+        // B) Extraer ratings únicos y ordenarlos usando el valor numérico (de mayor a menor)
+        val uniqueRatings = historicalRecipes
+            .sortedByDescending { it.getNumericRating() } // Requiere la función de extensión en HistoricalRecipe.kt
+            .map { it.rating }
+            .toSet()
+            .toList()
+
+        // C) Extraer calorías únicas y ordenarlas usando el valor numérico (de menor a mayor)
+        val uniqueCalories = historicalRecipes
+            .sortedBy { it.getNumericCalories() } // Requiere la función de extensión en HistoricalRecipe.kt
+            .map { it.calories }
+            .toSet()
+            .toList()
+
+        // D) Extraer TODOS los ingredientes únicos
+        val uniqueIngredients = historicalRecipes
+            .flatMap { it.ingredients } // Junta todas las listas de ingredientes en una sola
+            .map {
+                // Limpia el ingrediente (ej: "1 taza de lentejas rojas" -> "lentejas rojas")
+                it.replace(Regex("^[0-9\\/\\.\\s]*[a-zA-ZáéíóúñÁÉÍÓÚÑ]+\\s+de\\s+"), "")
+                    .replace(Regex("^[0-9\\/\\.\\s]*[a-zA-ZáéíóúñÁÉÍÓÚÑ]+\\s+"), "")
+                    .trim()
+                    .split('(')[0].trim()
+            }
+            .filter { it.isNotEmpty() && it.length > 2 }
+            .toSet()
+            .toList()
+            .sorted()
+
+        return FilterOptions(
+            types = uniqueTypes,
+            ratings = uniqueRatings,
+            calories = uniqueCalories,
+            ingredients = uniqueIngredients
+        )
+    }
 }

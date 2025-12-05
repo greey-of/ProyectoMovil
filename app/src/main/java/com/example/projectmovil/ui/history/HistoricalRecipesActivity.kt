@@ -16,185 +16,139 @@ import com.google.android.material.chip.Chip
 
 class HistoricalRecipesActivity : AppCompatActivity() {
 
-    // 1. Listas y Referencias
-    private val allRecipes: List<HistoricalRecipe> by lazy {
-        HistoricalRecipeProvider.historicalRecipes
-    }
-    private lateinit var recipesContainer: LinearLayout
+    // Lista original (fuente de verdad)
+    private val originalRecipes = HistoricalRecipeProvider.historicalRecipes
 
-    // 2. Variables de Estado de los Filtros
-    private var currentTypeFilter: String? = null
-    private var currentMinRating: Double? = null
-    private var currentMaxCalories: Int? = null
+    // Lista actual filtrada
+    private var currentRecipes: List<HistoricalRecipe> = originalRecipes
+
+    // Estado de filtros
+    private data class FilterState(
+        var selectedType: String? = null,
+        var selectedRating: String? = null,
+        var selectedIngredient: String? = null,
+        var selectedCalories: String? = null
+    )
+
+    private val filterState = FilterState()
+    private lateinit var recipesContainer: LinearLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_historical_recipes)
 
-        val btnBack = findViewById<ImageButton>(R.id.btn_back)
         recipesContainer = findViewById(R.id.recipes_container)
 
-        // Regresar Activity
-        btnBack.setOnClickListener { finish() }
+        // Botón atrás
+        findViewById<ImageView>(R.id.btn_back).setOnClickListener { finish() }
 
-        // Inicializar filtros y aplicar el renderizado inicial
-        setupFilterChips()
+        // Configurar filtros
+        setupFilterDropdowns()
+
+        // Botón limpiar filtros
+        findViewById<Button>(R.id.btn_clear_filters).setOnClickListener {
+            clearFilters()
+        }
+
+        // Mostrar recetas al inicio
+        updateRecipesUI(originalRecipes)
+    }
+
+    /** Inicializa los filtros desplegables */
+    private fun setupFilterDropdowns() {
+        val filterOptions = HistoricalRecipeProvider.getFilterOptions()
+
+        val dropdownType = findViewById<AutoCompleteTextView>(R.id.filter_type_dropdown)
+        val dropdownRating = findViewById<AutoCompleteTextView>(R.id.filter_rating_dropdown)
+        val dropdownIngredient = findViewById<AutoCompleteTextView>(R.id.filter_ingredient_dropdown)
+        val dropdownCalories = findViewById<AutoCompleteTextView>(R.id.filter_calories_dropdown)
+
+        fun setupDropdown(dropdown: AutoCompleteTextView, options: List<String>, updateState: (String?) -> Unit) {
+            val adapter = ArrayAdapter(
+                this,
+                android.R.layout.simple_dropdown_item_1line,
+                options
+            )
+            dropdown.setAdapter(adapter)
+
+            dropdown.setOnItemClickListener { parent, _, position, _ ->
+                val selectedValue = parent.getItemAtPosition(position).toString()
+                updateState(selectedValue)
+                applyFilters()
+            }
+
+            dropdown.setOnFocusChangeListener { _, hasFocus ->
+                if (!hasFocus && dropdown.text.isNullOrEmpty()) {
+                    updateState(null)
+                    applyFilters()
+                }
+            }
+        }
+
+        setupDropdown(dropdownType, filterOptions.types) { filterState.selectedType = it }
+        setupDropdown(dropdownRating, filterOptions.ratings) { filterState.selectedRating = it }
+        setupDropdown(dropdownIngredient, filterOptions.ingredients) { filterState.selectedIngredient = it }
+        setupDropdown(dropdownCalories, filterOptions.calories) { filterState.selectedCalories = it }
+    }
+
+    /** Aplicar filtros */
+    private fun applyFilters() {
+        var filtered = originalRecipes
+
+        filterState.selectedType?.let { filtered = filtered.filter { r -> r.type == it } }
+        filterState.selectedRating?.let { filtered = filtered.filter { r -> r.rating == it } }
+        filterState.selectedIngredient?.let { ingredient ->
+            filtered = filtered.filter { r ->
+                r.ingredients.any { ing -> ing.contains(ingredient, ignoreCase = true) }
+            }
+        }
+        filterState.selectedCalories?.let { filtered = filtered.filter { r -> r.calories == it } }
+
+        currentRecipes = filtered
+        updateRecipesUI(filtered)
+    }
+
+    /** Limpia los filtros completamente */
+    private fun clearFilters() {
+        filterState.selectedType = null
+        filterState.selectedRating = null
+        filterState.selectedIngredient = null
+        filterState.selectedCalories = null
+
+        // Limpiar texto de los dropdowns
+        findViewById<AutoCompleteTextView>(R.id.filter_type_dropdown).setText("")
+        findViewById<AutoCompleteTextView>(R.id.filter_rating_dropdown).setText("")
+        findViewById<AutoCompleteTextView>(R.id.filter_ingredient_dropdown).setText("")
+        findViewById<AutoCompleteTextView>(R.id.filter_calories_dropdown).setText("")
+
         applyFilters()
     }
 
-    // =========================================================================
-    // I. SETUP DE CHIPS Y DIÁLOGOS
-    // =========================================================================
-
-    private fun setupFilterChips() {
-        // Asigna el OnClickListener a los Chips del XML
-        findViewById<Chip>(R.id.filter_type).setOnClickListener {
-            showTypeFilterDialog()
-        }
-        findViewById<Chip>(R.id.filter_rating).setOnClickListener {
-            showRatingFilterDialog()
-        }
-        findViewById<Chip>(R.id.filter_calories).setOnClickListener {
-            showCaloriesFilterDialog()
-        }
-    }
-
-    private fun showTypeFilterDialog() {
-        val uniqueTypes = allRecipes.map { it.type }.distinct().toMutableList()
-        uniqueTypes.add(0, "Todos")
-
-        AlertDialog.Builder(this)
-            .setTitle("Filtrar por Tipo")
-            .setItems(uniqueTypes.toTypedArray()) { _, which ->
-                val selectedType = uniqueTypes[which]
-
-                // 1. Actualiza el estado del filtro
-                currentTypeFilter = if (selectedType == "Todos") null else selectedType
-
-                // 2. Actualiza el texto del chip
-                val typeChip = findViewById<Chip>(R.id.filter_type)
-                typeChip.text = currentTypeFilter ?: getString(R.string.filter_type)
-
-                applyFilters()
-            }
-            .show()
-    }
-
-    private fun showRatingFilterDialog() {
-        val ratings = arrayOf("4.5 o más", "4.0 o más", "Mostrar todos")
-
-        AlertDialog.Builder(this)
-            .setTitle("Filtrar por Calificación")
-            .setItems(ratings) { _, which ->
-                val selectedRatingText = ratings[which]
-
-                // 1. Actualiza el estado del filtro
-                currentMinRating = when (which) {
-                    0 -> 4.5
-                    1 -> 4.0
-                    else -> null
-                }
-
-                // 2. Actualiza el texto del chip
-                val ratingChip = findViewById<Chip>(R.id.filter_rating)
-                ratingChip.text = if (currentMinRating == null) getString(R.string.filter_rating) else selectedRatingText
-
-                applyFilters()
-            }
-            .show()
-    }
-
-    private fun showCaloriesFilterDialog() {
-        val calorieLimits = arrayOf("Menos de 200 kcal", "Menos de 350 kcal", "Mostrar todos")
-
-        AlertDialog.Builder(this)
-            .setTitle("Filtrar por Calorías (Máx.)")
-            .setItems(calorieLimits) { _, which ->
-                val selectedCaloriesText = calorieLimits[which]
-
-                // 1. Actualiza el estado del filtro
-                currentMaxCalories = when (which) {
-                    0 -> 200
-                    1 -> 350
-                    else -> null
-                }
-
-                // 2. Actualiza el texto del chip
-                val caloriesChip = findViewById<Chip>(R.id.filter_calories)
-                caloriesChip.text = if (currentMaxCalories == null) getString(R.string.filter_calories) else selectedCaloriesText
-
-                applyFilters()
-            }
-            .show()
-    }
-
-    // =========================================================================
-    // II. LÓGICA DE FILTRADO Y RENDERIZADO
-    // =========================================================================
-
-    /**
-     * Aplica los filtros activos (Type, Rating, Calories) de forma incremental
-     * y llama a la función de renderizado con el resultado.
-     */
-    private fun applyFilters() {
-        var filteredList = allRecipes.toList() // Inicia con la lista completa
-
-        // 1. Filtro de Tipo
-        currentTypeFilter?.let { type ->
-            filteredList = filteredList.filter { it.type == type }
-        }
-
-        // 2. Filtro de Rating
-        currentMinRating?.let { minRating ->
-            filteredList = filteredList.filter { it.getNumericRating() >= minRating }
-        }
-
-        // 3. Filtro de Calorías (Máx.)
-        currentMaxCalories?.let { maxCalories ->
-            filteredList = filteredList.filter { it.getNumericCalories() <= maxCalories }
-        }
-
-        // 4. Actualizar la Interfaz con los resultados filtrados
-        renderRecipeCards(filteredList)
-    }
-
-    /**
-     * Infla cada tarjeta de la lista proporcionada y la añade al contenedor.
-     */
-    private fun renderRecipeCards(recipesToRender: List<HistoricalRecipe>) {
+    /** Renderiza toda la lista */
+    private fun updateRecipesUI(recipes: List<HistoricalRecipe>) {
         recipesContainer.removeAllViews()
 
-        if (recipesToRender.isEmpty()) {
-            val noResultsView = TextView(this).apply {
+        if (recipes.isEmpty()) {
+            val noData = TextView(this).apply {
                 text = "No se encontraron recetas con los filtros seleccionados."
-                setTextAppearance(android.R.style.TextAppearance_Material_Medium)
-                setPadding(50, 50, 50, 50)
+                textSize = 18f
                 gravity = android.view.Gravity.CENTER
+                setPadding(20, 40, 20, 40)
             }
-            recipesContainer.addView(noResultsView)
+            recipesContainer.addView(noData)
             return
         }
 
-        recipesToRender.forEach { recipe ->
-            val recipeCard = layoutInflater.inflate(
-                R.layout.item_historical_recipe,
-                recipesContainer,
-                false
-            )
-            setupRecipeCard(recipeCard, recipe)
-            recipesContainer.addView(recipeCard)
+        recipes.forEach { recipe ->
+            val card = layoutInflater.inflate(R.layout.item_historical_recipe, recipesContainer, false)
+            setupRecipeCard(card, recipe)
+            recipesContainer.addView(card)
         }
     }
 
-    // =========================================================================
-    // III. LÓGICA DE TARJETAS Y DIÁLOGOS
-    // =========================================================================
-
-    /**
-     * Configura la lógica de cada tarjeta individual.
-     */
+    /** Configura cada tarjeta */
     private fun setupRecipeCard(cardView: View, recipe: HistoricalRecipe) {
-        // --- 1. Referencias UI ---
+
         val tvTitle = cardView.findViewById<TextView>(R.id.tv_recipe_title)
         val tvDescription = cardView.findViewById<TextView>(R.id.tv_recipe_description)
         val tvRating = cardView.findViewById<TextView>(R.id.tv_recipe_rating)
@@ -204,10 +158,9 @@ class HistoricalRecipesActivity : AppCompatActivity() {
         val tvPreparation = cardView.findViewById<TextView>(R.id.tv_recipe_preparation)
 
         val btnShowMore = cardView.findViewById<Button>(R.id.btn_show_more)
-        val btnAddReview = cardView.findViewById<Button>(R.id.btn_add_review)
         val expandedContent = cardView.findViewById<LinearLayout>(R.id.expanded_content)
+        val btnAddReview = cardView.findViewById<Button>(R.id.btn_add_review)
 
-        // --- 2. Seteo de Textos ---
         tvTitle.text = recipe.name
         tvDescription.text = recipe.shortDescription
 
@@ -217,31 +170,30 @@ class HistoricalRecipesActivity : AppCompatActivity() {
 
         tvIngredients.text = recipe.ingredients.joinToString("\n") { "• $it" }
 
-        val prepText = recipe.preparation.mapIndexed { index, step ->
-            "${index + 1}. $step"
+        tvPreparation.text = recipe.preparation.mapIndexed { idx, step ->
+            "${idx + 1}. $step"
         }.joinToString("\n\n")
 
-        tvPreparation.text = prepText
-
-        // --- 3. Expandir/Contraer ---
-        var isExpanded = false
         expandedContent.visibility = View.GONE
+        var expanded = false
 
         btnShowMore.setOnClickListener {
-            isExpanded = !isExpanded
-            expandedContent.visibility = if (isExpanded) View.VISIBLE else View.GONE
-            btnShowMore.text = if (isExpanded) "Mostrar menos ▲" else "Mostrar más ▼"
+            expanded = !expanded
+            if (expanded) {
+                expandedContent.visibility = View.VISIBLE
+                btnShowMore.text = "Mostrar menos ▲"
+            } else {
+                expandedContent.visibility = View.GONE
+                btnShowMore.text = "Mostrar más ▼"
+            }
         }
 
-        // --- 4. Reseñas ---
         btnAddReview.setOnClickListener {
             showReviewDialog(recipe.name)
         }
     }
 
-    /**
-     * Muestra un diálogo para añadir una reseña con rank y comentario.
-     */
+    /** Diálogo de reseña */
     private fun showReviewDialog(recipeName: String) {
         val dialogView = layoutInflater.inflate(R.layout.dialog_add_review, null)
         val etReview = dialogView.findViewById<EditText>(R.id.et_review)
@@ -251,12 +203,9 @@ class HistoricalRecipesActivity : AppCompatActivity() {
             .setTitle("Reseña: $recipeName")
             .setView(dialogView)
             .setPositiveButton("Enviar") { _, _ ->
-                val review = etReview.text.toString()
-                val rating = ratingBar.rating
-
                 Toast.makeText(
                     this,
-                    "Reseña enviada: $rating estrellas para '$recipeName'",
+                    "Reseña enviada: ${ratingBar.rating} estrellas",
                     Toast.LENGTH_LONG
                 ).show()
 
