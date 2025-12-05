@@ -1,4 +1,4 @@
-package com.example.projectmovil.data
+package com.example.projectmovil.data // Asegúrate que el paquete sea 'data'
 
 /**
  * Modelo de datos para una Receta Histórica.

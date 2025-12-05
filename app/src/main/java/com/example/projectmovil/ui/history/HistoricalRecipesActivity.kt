@@ -8,6 +8,11 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.projectmovil.R
 import com.example.projectmovil.data.HistoricalRecipe
 import com.example.projectmovil.data.HistoricalRecipeProvider
+// Importar las funciones de extensión que están en HistoricalRecipe.kt
+import com.example.projectmovil.data.getNumericCalories
+import com.example.projectmovil.data.getNumericRating
+// Importar el Chip de Material Design
+import com.google.android.material.chip.Chip
 
 class HistoricalRecipesActivity : AppCompatActivity() {
 
@@ -151,12 +156,14 @@ class HistoricalRecipesActivity : AppCompatActivity() {
         val tvHistory = cardView.findViewById<TextView>(R.id.tv_recipe_history)
         val tvIngredients = cardView.findViewById<TextView>(R.id.tv_recipe_ingredients)
         val tvPreparation = cardView.findViewById<TextView>(R.id.tv_recipe_preparation)
+
         val btnShowMore = cardView.findViewById<Button>(R.id.btn_show_more)
         val expandedContent = cardView.findViewById<LinearLayout>(R.id.expanded_content)
         val btnAddReview = cardView.findViewById<Button>(R.id.btn_add_review)
 
         tvTitle.text = recipe.name
         tvDescription.text = recipe.shortDescription
+
         tvRating.text = recipe.rating
         tvCalories.text = recipe.calories
         tvHistory.text = recipe.history
@@ -201,6 +208,8 @@ class HistoricalRecipesActivity : AppCompatActivity() {
                     "Reseña enviada: ${ratingBar.rating} estrellas",
                     Toast.LENGTH_LONG
                 ).show()
+
+                // Aquí podrías guardar en Room más adelante
             }
             .setNegativeButton("Cancelar", null)
             .show()
